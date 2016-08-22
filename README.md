@@ -5,7 +5,7 @@ frontend-nanodegree-arcade-game
 > Download the file using this [link] (https://github.com/dhanyakt/frontend-nanodegree-resume.git)
  and open the index.html using any javascript enabled browser.
 
- ### PlayingInstructions
+ PlayingInstructions
 > Use the arrow keys to control the player and reach the water by avoiding the enemies.
 
 #### Obstacle
