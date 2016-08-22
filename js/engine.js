@@ -15,6 +15,7 @@
  */
 
 var Engine = (function(global) {
+    //// console.log("calling method: engine.js(Engine)");
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
@@ -24,15 +25,17 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
+        score = 0;
 
     canvas.width = 505;
-    canvas.height = 606;
+    canvas.height = 700;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
     function main() {
+        //// console.log("calling method: engine.js(main)");
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
          * instructions at different speeds we need a constant value that
@@ -46,7 +49,10 @@ var Engine = (function(global) {
          * our update function since it may be used for smooth animation.
          */
         update(dt);
+        //drawScore();
+        //drawLives();
         render();
+        //gameOver();
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -64,6 +70,7 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
+        // console.log("calling method: engine.js(init)");
         reset();
         lastTime = Date.now();
         main();
@@ -79,8 +86,9 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        // console.log("calling method: engine.js(update)");
         updateEntities(dt);
-        // checkCollisions();
+        //checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -91,6 +99,7 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
+        // console.log("calling method: engine.js(updateEntities)");
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
@@ -104,6 +113,7 @@ var Engine = (function(global) {
      * they are just drawing the entire screen over and over.
      */
     function render() {
+        // console.log("calling method: engine.js(render)");
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
@@ -113,7 +123,7 @@ var Engine = (function(global) {
                 'images/stone-block.png',   // Row 2 of 3 of stone
                 'images/stone-block.png',   // Row 3 of 3 of stone
                 'images/grass-block.png',   // Row 1 of 2 of grass
-                'images/grass-block.png'    // Row 2 of 2 of grass
+                'images/grass-block.png',     // Row 2 of 2 of grass
             ],
             numRows = 6,
             numCols = 5,
@@ -132,10 +142,9 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]), col * 101,row * 83);
             }
         }
-
         renderEntities();
     }
 
@@ -144,14 +153,21 @@ var Engine = (function(global) {
      * on your enemy and player entities within app.js
      */
     function renderEntities() {
+        // console.log("calling method: engine.js(renderEntities)");
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        gem.forEach(function(gem) {
+            gem.render();
+        });
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
         player.render();
+        drawScore();
+        drawLives();
+        gameOver();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -159,6 +175,7 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
+        // console.log("calling method: engine.js(reset)");
         // noop
     }
 
@@ -171,7 +188,11 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-horn-girl.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png',
+        'images/Rock.png'
     ]);
     Resources.onReady(init);
 
