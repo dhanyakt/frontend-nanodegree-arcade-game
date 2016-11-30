@@ -49,10 +49,7 @@ var Engine = (function(global) {
          * our update function since it may be used for smooth animation.
          */
         update(dt);
-        //drawScore();
-        //drawLives();
         render();
-        //gameOver();
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -70,7 +67,6 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        // console.log("calling method: engine.js(init)");
         reset();
         lastTime = Date.now();
         main();
@@ -86,9 +82,7 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
-        // console.log("calling method: engine.js(update)");
         updateEntities(dt);
-        //checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -99,7 +93,6 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        // console.log("calling method: engine.js(updateEntities)");
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });

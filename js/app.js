@@ -1,11 +1,12 @@
 'use-strict';
 // Global variables
 var win = true;
-var freeze_screen = false;
+var freezeScreen = false;
 var lives = 3;
 var score = 0;
-var next_level = false;
-var start_new_game = false;
+var nextLevel = false;
+var startNewGame = false;
+
 
 // Adding gems
 var Gem = function(x, y) {
@@ -14,7 +15,6 @@ var Gem = function(x, y) {
     max = 225;
     this.x = Math.floor(Math.random() * (max - min) + min);
     this.y = Math.floor(Math.random() * (max - min) + min);
-    //    console.log ('x:' + this.x + ' y:' + this.y);
     this.width = 30;
     this.height = 40;
     this.status = 1;
@@ -30,7 +30,13 @@ Gem.prototype.render = function() {
 };
 
 /* ************** Enemy **************/
-// Enemies our player must avoid
+/*
+* @description Represents a Enemy
+* @constructor
+* @param {number} x
+* @param {number} y
+* @param {number} speed
+*/
 var Enemy = function(x, y, speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -47,14 +53,13 @@ var Enemy = function(x, y, speed) {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    //    // // console.log("calling method: app.js(Enemy.prototype.update)");
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    if (this.x < 500 && freeze_screen === false) {
+    if (this.x < 500 && freezeScreen === false) {
         this.x = this.x + this.speed * dt;
         this.x += 3;
-    } else if (freeze_screen === false) {
+    } else if (freezeScreen === false) {
         this.x = this.x + this.speed * dt;
         this.x = Math.floor(Math.random() * 100);
         this.x += 3;
@@ -63,13 +68,18 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    // // console.log("calling method: app.js(Enemy.prototype.render)");
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+/* ************** Player **************/
+/*
+* @description Represents a Player
+* @constructor
+* @param {number} x
+* @param {number} y
+* @param {number} speed
+*/
+
 var Player = function(x, y, speed) {
     this.x = x;
     this.y = y;
@@ -80,34 +90,35 @@ var Player = function(x, y, speed) {
 
 // Invoking checkCollision method from update
 Player.prototype.update = function() {
-    // // console.log("calling method: app.js(Player.prototype.update)");
     this.checkCollisions();
 };
 
 //Checking collision detection
 Player.prototype.checkCollisions = function() {
-    start_new_game = false;
-    //// // console.log("calling method: app.js(Player.prototype.checkCollisions)");
+    startNewGame = false;
+    var gemLen = gem.length;
+
     // Check collisions with enemies
-    for (var i = 0; i < allEnemies.length; i++) {
-        if (allEnemies[i].x < player.x + player.width &&
-            allEnemies[i].x + allEnemies[i].width > player.x &&
-            allEnemies[i].y < player.y + player.height &&
-            allEnemies[i].y + allEnemies[i].height > player.y) {
+    var len = allEnemies.length;
+    for (var i = 0; i < len; i++) {
+        if (allEnemies[i].x < this.x + this.width &&
+            allEnemies[i].x + allEnemies[i].width > this.x &&
+            allEnemies[i].y < this.y + this.height &&
+            allEnemies[i].y + allEnemies[i].height > this.y) {
             console.log("collision detected");
-            handleCollisions();
+            this.handleCollisions();
         } else if (this.y <= 40 && lives) {
-            console.log("You Won");
             score += 10;
             this.reset();
         }
     } // end of for loop with enemy collision.
 
-    for (var j = 0; j < gem.length; j++) {
-        if (gem[j].status === 1 && gem[j].x < player.x + player.width &&
-            gem[j].x + gem[j].width > player.x &&
-            gem[j].y < player.y + player.height &&
-            gem[j].y + gem[j].height > player.y) {
+    // Collisions with gems
+    for (var j = 0; j < gemLen; j++) {
+        if (gem[j].status === 1 && gem[j].x < this.x + this.width &&
+            gem[j].x + gem[j].width > this.x &&
+            gem[j].y < this.y + this.height &&
+            gem[j].y + gem[j].height > this.y) {
             console.log("gem collision detected");
             score += 10;
             gem[j].status = 0;
@@ -115,21 +126,30 @@ Player.prototype.checkCollisions = function() {
     }
 };
 
-
 Player.prototype.reset = function() {
-// console.log("calling method: app.js(Player.prototype.reset)");
     this.x = 200;
     this.y = 400;
 };
 
 Player.prototype.render = function() {
-    // console.log("calling method: app.js(Player.prototype.render)");
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+Player.prototype.handleCollisions = function() {
+    if (lives > 0) {
+        lives--;
+    }
+    if (lives === 0) {
+        win = false;
+        freezeScreen = true;
+        gameOver();
+    } else {
+        this.reset();
+    }
+}
+
 // Handles the input keys
 Player.prototype.handleInput = function(direction) {
-    //    // console.log("calling method: app.js(Player.prototype.handleInput)");
     switch (direction) {
         case 'left':
             if (this.x > 50) {
@@ -142,7 +162,6 @@ Player.prototype.handleInput = function(direction) {
             if (this.x < 400) {
                 this.x += 100;
                 console.log("right");
-
             }
             break;
         case 'up':
@@ -159,7 +178,8 @@ Player.prototype.handleInput = function(direction) {
             break;
         case 'enter':
             console.log("enter");
-            if (next_level || freeze_screen) {
+            if (nextLevel || freezeScreen) {
+                this.reset();
                 gameReset();
             }
             break;
@@ -167,9 +187,8 @@ Player.prototype.handleInput = function(direction) {
 };
 
 // This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+// Player.handleInput() method.
 document.addEventListener('keyup', function(e) {
-    //    // console.log("calling method: app.js(keyup EventListener)");
     var allowedKeys = {
         37: 'left',
         38: 'up',
@@ -177,63 +196,41 @@ document.addEventListener('keyup', function(e) {
         40: 'down',
         13: 'enter'
     };
-    console.log("dhanya pressed key # [" + e.keyCode + "]");
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
 /* @Helper functions for rendering scores, lives and function to
    handle collisions with enemy */
 var drawScore = function() {
-    //    // console.log("calling method: app.js(drawScore)");
     ctx.fillRect(10, 0, 10, 40);
     drawText("Scores :" + " " + score, 10, 40);
 };
 
 var drawLives = function() {
-    //    // console.log("calling method: app.js(drawLives)");
     ctx.fillRect(250, 0, 300, 40);
     drawText("Lives :" + " " + lives, 300, 40);
 };
 
-var handleCollisions = function() {
-    //// console.log("calling method: app.js(handleCollisions)");
-    if (lives > 0) {
-        lives--;
-    }
-    if (lives === 0) {
-        win = false;
-        freeze_screen = true;
-        gameOver();
-    } else {
-        player.reset();
-    }
-};
-
-// Function to restart game when playes looses
+// Function to restart game when player looses
 var gameReset = function() {
-    //// console.log("calling method: app.js(gameReset)");
     lives = 3;
     score = 0;
-    player.reset();
     gem.status = 1;
-    freeze_screen = false;
-    start_new_game = true;
+    freezeScreen = false;
+    startNewGame = true;
 };
 
 // Function to grey out for the gameover screen
 var gameOver = function() {
-    //// console.log("calling method: app.js(gameOver)");
+     console.log("calling method: app.js(gameOver)");
     if (win === false && lives === 0) {
         var imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
         var data = imgData.data;
         for (var i = 0; i < data.length; i += 4) {
             var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-            // red
-            data[i] = brightness;
-            // green
-            data[i + 1] = brightness;
-            // blue
-            data[i + 2] = brightness;
+            data[i] = brightness;// red
+            data[i + 1] = brightness; // green
+            data[i + 2] = brightness; // blue
         }
         ctx.putImageData(imgData, 0, 0);
         drawText("Game Over!", ctx.canvas.width / 4, ctx.canvas.height / 2);
@@ -243,7 +240,6 @@ var gameOver = function() {
 
 //General helper function for drawing text in the game.
 var drawText = function(text, width, height) {
-    // console.log("calling method: app.js(drawText)");
     ctx.font = "26pt Impact";
     ctx.fillStyle = "white";
     ctx.fillText(text, width, height);
